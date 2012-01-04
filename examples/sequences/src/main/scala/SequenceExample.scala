@@ -21,13 +21,21 @@ import java.io._
 import com.nicta.scoobi.io.sequence.SequenceFileInput
 import com.nicta.scoobi.io.sequence.SequenceFileOutput
 import org.apache.hadoop.io.Text
+import com.nicta.scoobi.io.sequence.OutputConverter
 
 object SequenceExample {
-
+  implicit val converter = new OutputConverter[Text, Text, (Text, Text)] {
+     def toKeyValue(s: (Text,Text)) = (s._1, s._2)
+  }
+  
+  implicit def textIdent(text : Text) : Text = text
+  
   def main(args: Array[String]) = withHadoopArgs(args) { a =>
     val inputFile = a(0)
     val outputFile = a(1)
-    val lines: DList[(Text, Text)] = SequenceFileInput.fromSequenceFile[Text, Text](inputFile).filter { value => println(value); true }
-    DList.persist(SequenceFileOutput.toSequenceFile(lines, outputFile))
+    val lines = SequenceFileInput.fromSequenceFile[Text, Text](inputFile).map(_._2.toString)
+    DList.persist(SequenceFileOutput.toSequenceFile[String](lines, outputFile))
+ 
+    //DList.persist(SequenceFileOutput.toSequenceFileX[Text, Text, Text,Text](lines, outputFile)(textIdent, textIdent))
   }
 }

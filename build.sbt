@@ -17,7 +17,7 @@ name := "scoobi"
 
 organization := "com.nicta"
 
-version := "0.2.0"
+version := "0.2.0-SNAPSHOT"
 
 scalaVersion := "2.9.1"
 
@@ -27,6 +27,21 @@ libraryDependencies ++= Seq(
   "org.scala-tools.testing" %% "scalacheck" % "1.9"
 )
 
+//publishMavenStyle := true
+
+//otherResolvers := Seq(Resolver.file("dotM2",file(Path.userHome + "/.m2/repository")))
+
+//publishLocalConfiguration <<= 
+//  (packagedArtifacts, deliverLocal, ivyLoggingLevel) map {  
+//    (arts, _, level) => new PublishConfiguration(None, "dotM2", arts, List[String](), level) 
+//  }
+
+resolvers += Resolver.file("file",  new File( "/var/www/mvn" ))
+
+//publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+
+publishTo := Some(Resolver.file("file",  new File( "/var/www/mvn" )) )
+ 
 publishArtifact in packageDoc := false
 
 compileOrder := CompileOrder.ScalaThenJava
