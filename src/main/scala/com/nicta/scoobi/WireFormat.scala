@@ -1,24 +1,23 @@
 /**
-  * Copyright 2011 National ICT Australia Limited
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+ * Copyright 2011 National ICT Australia Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.nicta.scoobi
 
 import java.io._
 import org.apache.hadoop.io._
 import annotation.implicitNotFound
-
 
 /** Type-class for sending types across the Hadoop wire. */
 @implicitNotFound(msg = "Cannot find WireFormat type class for ${A}")
@@ -27,7 +26,6 @@ trait WireFormat[A] extends Serializable {
   def fromWire(in: DataInput): A
   def show(x: A): String
 }
-
 
 /** Implicit definitions of WireFormat instances for common types. */
 object WireFormat {
@@ -224,7 +222,7 @@ object WireFormat {
     override def show(x: T): String = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -243,13 +241,13 @@ object WireFormat {
       in.readInt() match {
         case 'A' => implicitly[WireFormat[A]].fromWire(in)
         case 'B' => implicitly[WireFormat[B]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -272,13 +270,13 @@ object WireFormat {
         case 'A' => implicitly[WireFormat[A]].fromWire(in)
         case 'B' => implicitly[WireFormat[B]].fromWire(in)
         case 'C' => implicitly[WireFormat[C]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat, D <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat, D <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -305,13 +303,13 @@ object WireFormat {
         case 'B' => implicitly[WireFormat[B]].fromWire(in)
         case 'C' => implicitly[WireFormat[C]].fromWire(in)
         case 'D' => implicitly[WireFormat[D]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat, D <: T : Manifest : WireFormat, E <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat, D <: T: Manifest: WireFormat, E <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -342,13 +340,13 @@ object WireFormat {
         case 'C' => implicitly[WireFormat[C]].fromWire(in)
         case 'D' => implicitly[WireFormat[D]].fromWire(in)
         case 'E' => implicitly[WireFormat[E]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat, D <: T : Manifest : WireFormat, E <: T : Manifest : WireFormat, F <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat, D <: T: Manifest: WireFormat, E <: T: Manifest: WireFormat, F <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -383,13 +381,13 @@ object WireFormat {
         case 'D' => implicitly[WireFormat[D]].fromWire(in)
         case 'E' => implicitly[WireFormat[E]].fromWire(in)
         case 'F' => implicitly[WireFormat[F]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat, D <: T : Manifest : WireFormat, E <: T : Manifest : WireFormat, F <: T : Manifest : WireFormat, G <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat, D <: T: Manifest: WireFormat, E <: T: Manifest: WireFormat, F <: T: Manifest: WireFormat, G <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -428,13 +426,13 @@ object WireFormat {
         case 'E' => implicitly[WireFormat[E]].fromWire(in)
         case 'F' => implicitly[WireFormat[F]].fromWire(in)
         case 'G' => implicitly[WireFormat[G]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
   }
 
-  def mkAbstractWireFormat[T, A <: T : Manifest : WireFormat, B <: T : Manifest : WireFormat,  C <: T : Manifest : WireFormat, D <: T : Manifest : WireFormat, E <: T : Manifest : WireFormat, F <: T : Manifest : WireFormat, G <: T : Manifest : WireFormat, H <: T : Manifest : WireFormat]() = new WireFormat[T] {
+  def mkAbstractWireFormat[T, A <: T: Manifest: WireFormat, B <: T: Manifest: WireFormat, C <: T: Manifest: WireFormat, D <: T: Manifest: WireFormat, E <: T: Manifest: WireFormat, F <: T: Manifest: WireFormat, G <: T: Manifest: WireFormat, H <: T: Manifest: WireFormat]() = new WireFormat[T] {
 
     override def toWire(obj: T, out: DataOutput) {
       val clazz: Class[_] = obj.getClass
@@ -477,7 +475,7 @@ object WireFormat {
         case 'F' => implicitly[WireFormat[F]].fromWire(in)
         case 'G' => implicitly[WireFormat[G]].fromWire(in)
         case 'H' => implicitly[WireFormat[H]].fromWire(in)
-        case  x  => sys.error("Error in fromWire, don't know what " + x + " is")
+        case x => sys.error("Error in fromWire, don't know what " + x + " is")
       }
 
     override def show(x: T) = x.toString
@@ -489,7 +487,7 @@ object WireFormat {
   implicit def AnythingFmt[T <: Serializable] = new WireFormat[T] {
     def toWire(x: T, out: DataOutput) = {
       val bytesOut = new ByteArrayOutputStream
-      val bOut =  new ObjectOutputStream(bytesOut)
+      val bOut = new ObjectOutputStream(bytesOut)
       bOut.writeObject(x)
       bOut.close()
 
@@ -511,6 +509,23 @@ object WireFormat {
   }
 
   /*
+   * Make Hadoop's writables into a wire format
+   */
+  implicit def WritableFmt[T <: Writable: Manifest] = new WireFormat[T] {
+    def toWire(x: T, out: DataOutput) = {
+      x.write(out)
+    }
+
+    def fromWire(in: DataInput): T = {
+      val x = implicitly[Manifest[T]].erasure.newInstance()
+      x.asInstanceOf[Writable].readFields(in)
+      x.asInstanceOf[T] 
+    }
+
+    def show(x: T) = x.toString
+  }
+
+  /*
    * Built-in Hadoop Writable types.
    */
 
@@ -521,9 +536,9 @@ object WireFormat {
   }
 
   implicit def IntegerFmt = new WireFormat[java.lang.Integer] {
-      def toWire(x: java.lang.Integer, out: DataOutput) { out.writeInt(x) }
-      def fromWire(in: DataInput): java.lang.Integer = in.readInt()
-      def show(x: java.lang.Integer) = x.toString
+    def toWire(x: java.lang.Integer, out: DataOutput) { out.writeInt(x) }
+    def fromWire(in: DataInput): java.lang.Integer = in.readInt()
+    def show(x: java.lang.Integer) = x.toString
   }
 
   implicit def BooleanFmt = new WireFormat[Boolean] {
@@ -583,10 +598,9 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-  implicit def Tuple3Fmt[T1, T2, T3]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3]) =
+  implicit def Tuple3Fmt[T1, T2, T3](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3]) =
     new WireFormat[(T1, T2, T3)] {
       def toWire(x: (T1, T2, T3), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -603,10 +617,9 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-  implicit def Tuple4Fmt[T1, T2, T3, T4]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4]) =
+  implicit def Tuple4Fmt[T1, T2, T3, T4](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4]) =
     new WireFormat[Tuple4[T1, T2, T3, T4]] {
       def toWire(x: (T1, T2, T3, T4), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -625,11 +638,10 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3), wt4.show(x._4))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-  implicit def Tuple5Fmt[T1, T2, T3, T4, T5]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
-                wt5: WireFormat[T5]) =
+  implicit def Tuple5Fmt[T1, T2, T3, T4, T5](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
+    wt5: WireFormat[T5]) =
     new WireFormat[(T1, T2, T3, T4, T5)] {
       def toWire(x: (T1, T2, T3, T4, T5), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -650,11 +662,10 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3), wt4.show(x._4), wt5.show(x._5))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-    implicit def Tuple6Fmt[T1, T2, T3, T4, T5, T6]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
-                wt5: WireFormat[T5], wt6: WireFormat[T6]) =
+  implicit def Tuple6Fmt[T1, T2, T3, T4, T5, T6](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
+    wt5: WireFormat[T5], wt6: WireFormat[T6]) =
     new WireFormat[(T1, T2, T3, T4, T5, T6)] {
       def toWire(x: (T1, T2, T3, T4, T5, T6), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -677,11 +688,10 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3), wt4.show(x._4), wt5.show(x._5), wt6.show(x._6))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-  implicit def Tuple7Fmt[T1, T2, T3, T4, T5, T6, T7]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
-                wt5: WireFormat[T5], wt6: WireFormat[T6], wt7: WireFormat[T7]) =
+  implicit def Tuple7Fmt[T1, T2, T3, T4, T5, T6, T7](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
+    wt5: WireFormat[T5], wt6: WireFormat[T6], wt7: WireFormat[T7]) =
     new WireFormat[(T1, T2, T3, T4, T5, T6, T7)] {
       def toWire(x: (T1, T2, T3, T4, T5, T6, T7), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -706,11 +716,10 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3), wt4.show(x._4), wt5.show(x._5), wt6.show(x._6), wt7.show(x._7))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
-  implicit def Tuple8Fmt[T1, T2, T3, T4, T5, T6, T7, T8]
-      (implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
-                wt5: WireFormat[T5], wt6: WireFormat[T6], wt7: WireFormat[T7], wt8: WireFormat[T8]) =
+  implicit def Tuple8Fmt[T1, T2, T3, T4, T5, T6, T7, T8](implicit wt1: WireFormat[T1], wt2: WireFormat[T2], wt3: WireFormat[T3], wt4: WireFormat[T4],
+    wt5: WireFormat[T5], wt6: WireFormat[T6], wt7: WireFormat[T7], wt8: WireFormat[T8]) =
     new WireFormat[(T1, T2, T3, T4, T5, T6, T7, T8)] {
       def toWire(x: (T1, T2, T3, T4, T5, T6, T7, T8), out: DataOutput) = {
         wt1.toWire(x._1, out)
@@ -737,7 +746,7 @@ object WireFormat {
         val elems = List(wt1.show(x._1), wt2.show(x._2), wt3.show(x._3), wt4.show(x._4), wt5.show(x._5), wt6.show(x._6), wt7.show(x._7), wt8.show(x._8))
         elems.mkString("(", ",", ")")
       }
-  }
+    }
 
   /*
    * List-like structures
@@ -765,21 +774,20 @@ object WireFormat {
   implicit def OptionFmt[T](implicit wt: WireFormat[T]) = new WireFormat[Option[T]] {
     def toWire(x: Option[T], out: DataOutput) = x match {
       case Some(y) => { out.writeBoolean(true); wt.toWire(y, out) }
-      case None    => { out.writeBoolean(false) }
+      case None => { out.writeBoolean(false) }
     }
     def fromWire(in: DataInput): Option[T] = {
       val isSome = in.readBoolean()
       if (isSome) {
         val x: T = wt.fromWire(in)
         Some(x)
-      }
-      else {
+      } else {
         None
       }
     }
     def show(x: Option[T]) = x match {
       case Some(y) => "S{" + wt.show(y) + "}"
-      case None    => "N{}"
+      case None => "N{}"
     }
   }
 
@@ -788,7 +796,7 @@ object WireFormat {
    */
   implicit def EitherFmt[T1, T2](implicit wt1: WireFormat[T1], wt2: WireFormat[T2]) = new WireFormat[Either[T1, T2]] {
     def toWire(x: Either[T1, T2], out: DataOutput) = x match {
-      case Left(x)  => { out.writeBoolean(true); wt1.toWire(x, out) }
+      case Left(x) => { out.writeBoolean(true); wt1.toWire(x, out) }
       case Right(x) => { out.writeBoolean(false); wt2.toWire(x, out) }
     }
     def fromWire(in: DataInput): Either[T1, T2] = {
@@ -796,14 +804,13 @@ object WireFormat {
       if (isLeft) {
         val x: T1 = wt1.fromWire(in)
         Left(x)
-      }
-      else {
+      } else {
         val x: T2 = wt2.fromWire(in)
         Right(x)
       }
     }
     def show(x: Either[T1, T2]) = x match {
-      case Left(x)  => "L{" + wt1.show(x) + "}"
+      case Left(x) => "L{" + wt1.show(x) + "}"
       case Right(x) => "R{" + wt2.show(x) + "}"
     }
   }
