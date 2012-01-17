@@ -22,9 +22,10 @@ import com.nicta.scoobi.impl.rtt.ScoobiWritable
 import java.io.DataOutput
 import java.io.DataInput
 import sun.reflect.generics.reflectiveObjects.NotImplementedException
+import java.io.EOFException
 
-/** 
- * Reader for sequence files. It uses hadoop's types instead of scoobi's types and returns the key-values contained in the 
+/**
+ * Reader for sequence files. It uses hadoop's types instead of scoobi's types and returns the key-values contained in the
  * sequence file as pairs.
  */
 object SequenceFileInput {
@@ -83,7 +84,7 @@ class SimplerSequenceFileRecordReader[K <: Writable: Manifest, V <: Writable: Ma
 
   override def initialize(split: InputSplit, context: TaskAttemptContext): Unit = lrr.initialize(split, context)
 
-  override def nextKeyValue: Boolean = lrr.nextKeyValue
+  override def nextKeyValue: Boolean = try { lrr.nextKeyValue } catch { case e: EOFException => println("warning: EOF"); false }
 
   def createKey: NullWritable = NullWritable.get
 }

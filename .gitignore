@@ -1,6 +1,11 @@
 target
 .target
 project/boot/
-
-src/test/resources/out/
-examples/joinExamples/output-dir/
+.classpath
+.project
+.settings/
+.scala_dependencies
+out/
+output-dir/
+.cache
+.history

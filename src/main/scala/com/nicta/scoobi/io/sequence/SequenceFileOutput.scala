@@ -48,6 +48,17 @@ import com.nicta.scoobi.impl.rtt.TaggedValue
 import org.apache.hadoop.io.Text
 import org.apache.hadoop.io.Writable
 
+trait OutputConverter[K, V, S] {
+  def toKeyValue(s: S): (K, V)
+}
+
+trait DataSink[K, V, B] {
+  def outputTypeName: String
+  def outputPath: Path
+  def outputFormat: Class[_ <: FileOutputFormat[K, V]]
+  def converter: OutputConverter[K, V, B]
+}
+
 /** Smart functions for persisting distributed lists by storing them as sequence files. */
 object SequenceFileOutput {
 
@@ -57,6 +68,22 @@ object SequenceFileOutput {
    */
   def toSequenceFile[A: WireFormat](dl: DList[A], path: String): DListPersister[A] = {
     new DListPersister(dl, new SequenceFilePersister(path))
+  }
+
+  def toSequenceFileX[K: WireFormat, V: WireFormat, WtK <: Writable, WtV <: Writable](dl: DList[(K, V)], path: String)(putK: K => WtK, putV: V => WtV): DListPersister[(K, V)] = {
+
+    val persister = new Persister[(K, V)] {
+      def mkOutputStore(node: AST.Node[(K, V)]) = new OutputStore(node) {
+        def outputTypeName = typeName
+        val outputPath = new Path(path)
+        val outputFormat = classOf[MySequenceFileOutputFormat[WtK, WtV]]
+        def converter = new OutputConverter[WtK, WtV, (K, V)] {
+          def toKeyValue(x: (K, V)) = (putK(x._1), putV(x._2))
+        }
+      }
+    }
+
+    new DListPersister(dl, persister)
   }
 
   /** A Persister that will store the output to a specified path using Hadoop's SequenceFileOutputFormat. */
@@ -69,7 +96,7 @@ object SequenceFileOutput {
   }
 }
 
-class MySequenceFileOutputFormat[K, V] extends SequenceFileOutputFormat[K, V] {
+class MySequenceFileOutputFormat[K <: Writable, V <: Writable] extends SequenceFileOutputFormat[K, V] {
   override def getRecordWriter(context: TaskAttemptContext): RecordWriter[K, V] = {
     val conf: Configuration = context.getConfiguration()
 
@@ -102,6 +129,7 @@ class MySequenceFileOutputFormat[K, V] extends SequenceFileOutputFormat[K, V] {
         // my plan is to get the _1 element as a key and _2 as a value for the 
         // sequence file , but I have no way to get to the tuple.
         //val pair = value.asInstanceOf[(Writable, Writable)]
+
         println(key, key.getClass, value, value.getClass)
         out.append(key, value);
       }

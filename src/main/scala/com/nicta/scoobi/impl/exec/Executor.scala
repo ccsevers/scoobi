@@ -52,7 +52,7 @@ object Executor {
 
     /* Check that all output dirs don't already exist. */
     def pathExists(p: Path) = {
-      val s = FileSystem.get(Scoobi.conf).listStatus(p)
+      val s = FileSystem.get(Scoobi.conf).globStatus(p) 
       if (s == null)          false
       else if (s.length == 0) false
       else                    true
@@ -84,7 +84,7 @@ object Executor {
       case _            => Unit
     }
 
-    /* Initialize reference counts of all intermeidate data (i.e. BridgeStores). */
+    /* Initialize reference counts of all intermediate data (i.e. BridgeStores). */
     val bridges: List[BridgeStore] = mscrs.toList flatMap (_.inputChannels) flatMap {
       case BypassInputChannel(bs@BridgeStore(_, _), _) => List(bs)
       case MapperInputChannel(bs@BridgeStore(_, _), _) => List(bs)
