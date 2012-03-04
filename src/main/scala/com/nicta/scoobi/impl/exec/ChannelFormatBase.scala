@@ -15,21 +15,12 @@
   */
 package com.nicta.scoobi.impl.exec
 
-import com.nicta.scoobi._
+import org.apache.hadoop.conf.Configuration
+import scala.collection.JavaConversions._
 
 
-/** A producer of a TaggedCombiner. */
-trait CombinerLike[V] {
-  def mkTaggedCombiner(tag: Int): TaggedCombiner[V]
-}
+trait ChannelFormatBase {
 
-
-/** A wrapper for a 'combine' function tagged for a specific output channel. */
-abstract class TaggedCombiner[V]
-    (val tag: Int)
-    (implicit val mV: Manifest[V], val wtV: WireFormat[V]) {
-
-  /** The actual 'combine' function that will be called by Hadoop at the
-    * completion of the mapping phase. */
-  def combine(x: V, y: V): V
+  /** Convert a Hadoop configuration to a Scala Map. */
+  def confToMap(conf: Configuration): Map[String, String] = conf.map(me => (me.getKey, me.getValue)).toMap
 }

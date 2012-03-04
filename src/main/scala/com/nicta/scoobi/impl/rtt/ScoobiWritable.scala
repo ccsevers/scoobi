@@ -23,7 +23,7 @@ import com.nicta.scoobi.WireFormat
 
 
 /** The super-class of all "value" types used in Hadoop jobs. */
-abstract class ScoobiWritable[A](private var x: A) extends Writable with Serializable { self =>
+abstract class ScoobiWritable[A](private var x: A) extends Writable { self =>
   def this() = this(null.asInstanceOf[A])
   def get: A = x
   def set(x: A) = { self.x = x }
@@ -86,7 +86,7 @@ class ScoobiWritableClassBuilder(name: String, m: Manifest[_], wt: WireFormat[_]
                                           "toString",
                                           Array(),
                                           Array(),
-                                          "return writer.show(" + toObject("get()", m) + ");",
+                                          "return get().toString();",
                                           ctClass)
     ctClass.addMethod(toStringMethod)
   }

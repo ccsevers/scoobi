@@ -218,6 +218,24 @@ class DList[A : Manifest : WireFormat](private val ast: Smart.DList[A]) { self =
 
   /** Create a new distributed list that is keyed based on a specified function. */
   def by[K : Manifest : WireFormat](kf: A => K): DList[(K, A)] = map { x => (kf(x), x) }
+
+  /** Create a distribued list containing just the keys of a key-value distributed list. */
+  def keys[K, V]
+      (implicit ev:   A <:< (K, V),
+                mK:   Manifest[K],
+                wtK:  WireFormat[K],
+                mV:   Manifest[V],
+                wtV:  WireFormat[V])
+    : DList[K] = map(ev(_)._1)
+
+  /** Create a distribued list containing just the values of a key-value distributed list. */
+  def values[K, V]
+      (implicit ev:   A <:< (K, V),
+                mK:   Manifest[K],
+                wtK:  WireFormat[K],
+                mV:   Manifest[V],
+                wtV:  WireFormat[V])
+    : DList[V] = map(ev(_)._2)
 }
 
 
@@ -230,6 +248,12 @@ object DList {
     FunctionInput.fromFunction(vec.size)(ix => vec(ix))
   }
 
+  /** Concatenates all arguement distributed lists into a single distributed list. */
+  def concat[A : Manifest : WireFormat](xss: List[DList[A]]): DList[A] = new DList(Smart.Flatten(xss.map(_.ast)))
+
+  /** Concatenates all arguement distributed lists into a single distributed list. */
+  def concat[A : Manifest : WireFormat](xss: DList[A]*): DList[A] = concat(xss: _*)
+
   /** Creates a distributed list containing values of a given function over a range of
     * integer values starting from 0. */
   def tabulate[A : Manifest : WireFormat](n: Int)(f: Int => A): DList[A] =
@@ -237,8 +261,8 @@ object DList {
 
   /* Pimping from generic collection types (i.e. Seq) to a Distributed List */
   trait PimpWrapper[A] { def toDList: DList[A] }
-  implicit def seqPimp[A : Manifest : WireFormat](seq: Seq[A]) = new PimpWrapper[A] {
-    def toDList: DList[A] = FunctionInput.fromFunction(seq.size)(seq)
+  implicit def travPimp[A : Manifest : WireFormat](trav: Traversable[A]) = new PimpWrapper[A] {
+    def toDList: DList[A] = FunctionInput.fromFunction(trav.size)(trav.toSeq)
   }
 
   /** Persist one or more distributed lists - will trigger MapReduce computations. */

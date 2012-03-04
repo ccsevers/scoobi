@@ -52,12 +52,12 @@ object JoinExamples {
     implicit val DepartmentFmt = mkCaseWireFormat(Department, Department.unapply _)
 
     // Read in lines of the form: Bob Smith, 31
-    val employees : DList[Employee] = extractFromDelimitedTextFile(",", employeesFile) {
+    val employees : DList[Employee] = fromDelimitedTextFile(employeesFile, ",") {
       case name :: Long(departmentId) :: _ => Employee(name, departmentId)
     }
     
     // Read in lines of the form: 31, Finance
-    val departments : DList[Department] = extractFromDelimitedTextFile(",", departmentsFile) {
+    val departments : DList[Department] = fromDelimitedTextFile(departmentsFile, ",") {
       case Long(id) :: name :: _ => Department(id, name)
     }
 
@@ -65,19 +65,19 @@ object JoinExamples {
     val departmentsById: DList[(Long, Department)] = departments.by(_.id)
 
     // Perform an inner (equi)join
-    val inner: DList[(Employee, Department)] = join(employeesByDepartmentId, departmentsById)
+    val inner: DList[(Long, (Employee, Department))] = join(employeesByDepartmentId, departmentsById)
 
     // Perform a left outer join and specify what to do when the left has an
     // entry without a matching entry on the right
-    val left: DList[(Employee, Department)] = leftJoin(employeesByDepartmentId, departmentsById) {
-      (departmentId, employee) => Department(departmentId, "Unknown")
-    }
+    val left: DList[(Long, (Employee, Department))] =
+      joinLeft(employeesByDepartmentId,
+               departmentsById,
+               (departmentId, employee) => Department(departmentId, "Unknown"))
 
     // Perform a right outer join and specify what to do when the right has an
     // entry without a matching entry on the left
-    val right: DList[(Employee, Department)] = rightJoin(employeesByDepartmentId, departmentsById) {
-      (id, department) => Employee("Unknown", id)
-    }
+    val right: DList[(Long, (Employee, Department))] =
+      joinRight(employeesByDepartmentId, departmentsById, (id, department) => Employee("Unknown", id))
 
     // Execute everything, and throw it into a directory
     DList.persist(
