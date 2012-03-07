@@ -1,18 +1,18 @@
 /**
-  * Copyright 2011 National ICT Australia Limited
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
+ * Copyright 2011 National ICT Australia Limited
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.nicta.scoobi
 
 import java.util.Date
@@ -22,16 +22,19 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.util.GenericOptionsParser
 import org.apache.hadoop.conf.Configuration
 import scala.collection.JavaConversions._
-import Option.{apply => ?}
+import Option.{ apply => ? }
 
 import com.nicta.scoobi.impl.util.JarBuilder
-
+import org.apache.commons.logging.LogFactory
 
 /** Global Scoobi functions and values. */
 object Scoobi {
+  lazy val logger = LogFactory.getLog("scoobi.Scoobi")
 
-  /** Helper method that parses the generic Haddop command line arguments before
-    * calling the user's code with the remaining arguments. */
+  /**
+   * Helper method that parses the generic Haddop command line arguments before
+   * calling the user's code with the remaining arguments.
+   */
   def withHadoopArgs(args: Array[String])(f: Array[String] => Unit) = {
     /* Parse options then update current configuration. Becuase the filesystem
      * property may have changed, also update working directory property. */
@@ -67,7 +70,6 @@ object Scoobi {
   /** The id for the current Scoobi job being (or about to be) executed. */
   val jobId: String = "scoobi-" + timestamp
 
-
   /** Scoobi's configuration. */
   lazy val conf: Configuration = {
     setWorkingDirectory(internalConf)
@@ -80,16 +82,23 @@ object Scoobi {
   /* The Scoobi working directory is in the user's home directory under '.scoobi' and
    * a timestamped directory. e.g. /home/fred/.scoobi/201110041326. */
   private def setWorkingDirectory(conf: Configuration) = {
-    val workdirPath = new Path(FileSystem.get(conf).getHomeDirectory, ".scoobi/" + jobId)
+    // read the environment variable user.home if set 
+    val homedir : String = if (conf.get("user.home") != null) {
+      conf.get("user.home")
+    } else {
+      FileSystem.get(conf).getHomeDirectory.toString
+    }
+    val workdirPath = new Path(homedir, ".scoobi/" + jobId)
     val workdir = workdirPath.toUri.toString
-    conf.set("scoobi.workdir", workdir)
+    logger.info("workdir: " + workdir)
+    conf.setIfUnset("scoobi.workdir", workdir)
   }
 
   /** Get the Scoobi working directory. */
   def getWorkingDirectory(conf: Configuration): Path = {
     ?(conf.get("scoobi.workdir")) match {
-      case Some(s)  => new Path(s)
-      case None     => sys.error("Scoobi working directory not set.")
+      case Some(s) => new Path(s)
+      case None => sys.error("Scoobi working directory not set.")
     }
   }
 }
