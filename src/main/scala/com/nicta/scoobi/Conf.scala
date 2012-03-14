@@ -7,7 +7,7 @@ import org.apache.hadoop.fs.FileSystem
 import org.apache.hadoop.util.GenericOptionsParser
 import org.apache.hadoop.conf.Configuration
 import scala.collection.JavaConversions._
-import Option.{apply => ?}
+import Option.{ apply => ? }
 
 import com.nicta.scoobi.impl.util.JarBuilder
 
@@ -15,8 +15,10 @@ object Conf extends ConfTrait
 
 trait ConfTrait {
 
-  /** Helper method that parses the generic Haddop command line arguments before
-    * calling the user's code with the remaining arguments. */
+  /**
+   * Helper method that parses the generic Haddop command line arguments before
+   * calling the user's code with the remaining arguments.
+   */
   def withHadoopArgs(args: Array[String])(f: Array[String] => Unit) = {
     /* Parse options then update current configuration. Becuase the filesystem
      * property may have changed, also update working directory property. */
@@ -52,23 +54,26 @@ trait ConfTrait {
   /** The id for the current Scoobi job being (or about to be) executed. */
   val jobId: String = "scoobi-" + timestamp
 
-
   /** Scoobi's configuration. */
   val conf = {
     val c = new Configuration
     c.set("scoobi-job-id", jobId)
     c
   }
-  
+
   private def withTrailingSlash(s: String) = if (s endsWith "/") s else s + '/'
 
   def getJobId(conf: Configuration): String =
     ?(conf.get("scoobi-job-id")).getOrElse(sys.error("Scoobi job id not set."))
 
+  def getMaxReducers(conf: Configuration): String = {
+    ?(conf.get("scoobi.maxreducers")).getOrElse("")
+  }
+
   /** Get the Scoobi working directory. */
   def getWorkingDirectory(conf: Configuration): Path = new Path(
     (?(conf.get("scoobi.workdir")) match {
       case Some(s) => withTrailingSlash(s)
-      case None    => withTrailingSlash(FileSystem.get(conf).getHomeDirectory.toUri.toString) + ".scoobi-tmp/"
-     }) + getJobId(conf))
+      case None => withTrailingSlash(FileSystem.get(conf).getHomeDirectory.toUri.toString) + ".scoobi-tmp/"
+    }) + getJobId(conf))
 }

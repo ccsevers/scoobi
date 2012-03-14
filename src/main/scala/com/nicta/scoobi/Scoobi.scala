@@ -56,6 +56,7 @@ object Scoobi extends com.nicta.scoobi.WireFormatImplicits
 
   // conf functions
   def getWorkingDirectory = Conf.getWorkingDirectory _
+  def maxReducers = Conf.getMaxReducers _
   def conf = Conf.conf
   def jobId = Conf.jobId
   def getUserJars = Conf.getUserJars
