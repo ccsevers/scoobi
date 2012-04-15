@@ -216,13 +216,16 @@ class MapReduceJob(stepId: Int) {
     val inputBytes: Long = mappers.keys.map(_.inputSize()).sum
     val inputGigabytes: Int = (inputBytes / (1000 * 1000 * 1000)).toInt + 1
     val numReducers: Int = inputGigabytes.toInt
-    job.setNumReduceTasks(numReducers)
-
+    val maxReducers: Int = try { Scoobi.maxReducers(job.getConfiguration).toInt } catch { case _ => Int.MaxValue }
+    val finalReducers = math.min(maxReducers, numReducers)
+    job.setNumReduceTasks(finalReducers)
 
     /* Log stats on this MR job. */
     val sizeStr = Helper.sizeString(inputBytes)
     logger.info("Total input size: " +  Helper.sizeString(inputBytes))
     logger.info("Number of reducers: " + numReducers)
+    logger.info("Max number of reducers (scoobi.maxreducers): " + maxReducers)
+    logger.info("Final used reducers: " + finalReducers)
 
 
     /* Run job */

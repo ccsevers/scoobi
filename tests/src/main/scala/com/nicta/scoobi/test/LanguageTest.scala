@@ -16,17 +16,16 @@
 package com.nicta.scoobi.test
 
 import java.io._
-import com.nicta.scoobi._
 import com.nicta.scoobi.Scoobi._
-import com.nicta.scoobi.lib.Join._
+//import com.nicta.scoobi.lib.Join._
 
 
 /** Test the language front-end */
 object LanguageTest {
 
-  import DList._
-  import io.text.TextInput._
-  import io.text.TextOutput._
+  //import DList._
+  //import io.text.TextInput._
+  //import io.text.TextOutput._
   
   val names = DList((1, "Joe"), (2, "Kate"), (3, "Peter"), (4, "Rami"), (6, "Fred"))
   val cnts = DList((1,36.8), (2,92.3), (3,88.6), (6,12.9), (7,59.2), (2,49.1), (3,22.2))
@@ -117,7 +116,7 @@ object LanguageTest {
 
   /** Run them. */
   def main(args: Array[String]) {
-    Scoobi.setJarByClass(this.getClass)
+    Conf.setJarByClass(this.getClass)
     println("-------------- join -------------"); joinTest()
     println("------------ graphTest ----------"); graphTest()
     println("----- bypassInputChannelTest ----"); bypassInputChannelTest()

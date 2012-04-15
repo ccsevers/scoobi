@@ -71,4 +71,8 @@ trait ConfTrait {
       case Some(s) => withTrailingSlash(s)
       case None    => withTrailingSlash(FileSystem.get(conf).getHomeDirectory.toUri.toString) + ".scoobi-tmp/"
      }) + getJobId(conf))
+  
+   def getMaxReducers(conf: Configuration): String = {
+     ?(conf.get("scoobi.maxreducers")).getOrElse("")
+   }
 }

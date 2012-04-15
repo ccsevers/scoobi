@@ -102,7 +102,7 @@ object ClassBuilderTest {
       Dummy()
     }
 
-    override def show(x: Dummy): String = "Dummy"
+    def show(x: Dummy): String = "Dummy"
   }
 
 

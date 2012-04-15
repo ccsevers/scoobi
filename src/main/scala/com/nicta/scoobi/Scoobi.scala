@@ -39,7 +39,7 @@ object Scoobi extends com.nicta.scoobi.WireFormatImplicits {
   def jobId = Conf.jobId
   def getUserJars = Conf.getUserJars
   def withHadoopArgs = Conf.withHadoopArgs _
-
+  def maxReducers = Conf.getMaxReducers _
 
   /* Persisting */
   def persist = DList.persist _
