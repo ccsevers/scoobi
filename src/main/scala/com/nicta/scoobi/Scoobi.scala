@@ -16,7 +16,7 @@
 package com.nicta.scoobi
 
 /** Global Scoobi functions and values. */
-object Scoobi extends com.nicta.scoobi.WireFormatImplicits {
+object Scoobi extends com.nicta.scoobi.WireFormatImplicits with com.nicta.scoobi.GroupingImplicits {
 
   /* Primary types */
   type WireFormat[A] = com.nicta.scoobi.WireFormat[A]
@@ -25,7 +25,6 @@ object Scoobi extends com.nicta.scoobi.WireFormatImplicits {
   type DObject[A] = com.nicta.scoobi.DObject[A]
   val DoFn = com.nicta.scoobi.DoFn
   type DoFn[A, B] = com.nicta.scoobi.DoFn[A, B]
-  val Grouping = com.nicta.scoobi.Grouping
   type Grouping[A] = com.nicta.scoobi.Grouping[A]
   type Job = com.nicta.scoobi.Job
   val Job = com.nicta.scoobi.Job
@@ -48,10 +47,10 @@ object Scoobi extends com.nicta.scoobi.WireFormatImplicits {
   /* Text file I/O */
   val TextOutput = com.nicta.scoobi.io.text.TextOutput
   val TextInput = com.nicta.scoobi.io.text.TextInput
-  val Int = TextInput.Int
-  val Long = TextInput.Long
-  val Double = TextInput.Double
-  val Float = TextInput.Float
+  val AnInt = TextInput.AnInt
+  val ALong = TextInput.ALong
+  val ADouble = TextInput.ADouble
+  val AFloat = TextInput.AFloat
 
   def fromTextFile(paths: String*) = TextInput.fromTextFile(paths: _*)
   def fromTextFile(paths: List[String]) = TextInput.fromTextFile(paths)
@@ -129,7 +128,7 @@ object Scoobi extends com.nicta.scoobi.WireFormatImplicits {
                A : Manifest : WireFormat,
                B : Manifest : WireFormat]
       (d1: DList[(K, A)], d2: DList[(K, B)])
-      = Join.joinLeft(d2, d1)
+      = Join.joinLeft(d1, d2)
 
   def coGroup[K  : Manifest : WireFormat : Grouping,
               A : Manifest : WireFormat,
