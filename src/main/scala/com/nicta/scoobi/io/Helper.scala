@@ -18,18 +18,22 @@ package com.nicta.scoobi.io
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.fs.FileSystem
 import Option.{apply => ?}
-
 import com.nicta.scoobi.Scoobi
+import java.io.FileNotFoundException
 
 
 /** A set of helper functions for implementing DataSources and DataSinks. */
 object Helper {
 
   /* Determine whether a path exists or not. */
-  def pathExists(p: Path): Boolean = ?(FileSystem.get(p.toUri, Scoobi.conf).globStatus(new Path(p, "*"))) match {
-    case None                     => false
-    case Some(s) if s.length == 0 => false
-    case Some(_)                  => true
+  def pathExists(p: Path): Boolean =  try {
+    ?(FileSystem.get(p.toUri, Scoobi.conf).globStatus(new Path(p, "*"))) match {
+    	case None                     => false
+    	case Some(s) if s.length == 0 => false
+    	case Some(_)                  => true
+    }
+  } catch {
+    case error: FileNotFoundException => false
   }
 
   def deletePath(p: Path)= FileSystem.get(Scoobi.conf).delete(p, true)
