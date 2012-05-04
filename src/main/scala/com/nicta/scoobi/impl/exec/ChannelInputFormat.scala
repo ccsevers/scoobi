@@ -33,6 +33,7 @@ import org.apache.hadoop.mapreduce.InputFormat
 import org.apache.hadoop.mapreduce.InputSplit
 import org.apache.hadoop.mapreduce.RecordReader
 import org.apache.hadoop.mapreduce.TaskAttemptContext
+import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl
 import org.apache.hadoop.util.ReflectionUtils
 import scala.util.matching.Regex
 import scala.collection.JavaConversions._
@@ -123,7 +124,7 @@ class ChannelInputFormat[K, V] extends InputFormat[K, V] {
       case (k, v) => jobCopy.getConfiguration.set(k, v)
     }
 
-    val contextCopy = new TaskAttemptContext(jobCopy.getConfiguration, context.getTaskAttemptID)
+    val contextCopy = new TaskAttemptContextImpl(jobCopy.getConfiguration, context.getTaskAttemptID)
 
     new ChannelRecordReader(split, contextCopy)
   }

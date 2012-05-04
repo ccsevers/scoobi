@@ -21,6 +21,7 @@ import org.apache.hadoop.mapreduce.Job
 import org.apache.hadoop.mapreduce.OutputFormat
 import org.apache.hadoop.mapreduce.TaskInputOutputContext
 import org.apache.hadoop.mapreduce.TaskAttemptContext
+import org.apache.hadoop.mapreduce.task.TaskAttemptContextImpl
 import org.apache.hadoop.mapreduce.RecordWriter
 import org.apache.hadoop.util.ReflectionUtils
 import scala.util.matching.Regex
@@ -68,7 +69,7 @@ class ChannelOutputFormat(context: TaskInputOutputContext[_, _, _, _]) {
         case (k, v) => job.getConfiguration.set(k, v)
       }
 
-      new TaskAttemptContext(job.getConfiguration, context.getTaskAttemptID())
+      new TaskAttemptContextImpl(job.getConfiguration, context.getTaskAttemptID())
     }
 
     taskContexts.getOrElseUpdate((channel, output), mkTaskContext)

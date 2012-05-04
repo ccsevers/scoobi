@@ -104,7 +104,7 @@
 		</repository>
 	</repositories>
 	<build>
-		<sourceDirectory>src/main/scala</sourceDirectory>
+		<!--<sourceDirectory>src/main/scala</sourceDirectory> -->
 		<testSourceDirectory>tests/src/main/scala</testSourceDirectory>
 		<plugins>
 			<plugin>
