@@ -96,13 +96,11 @@
 		<!-- <repository> <id>claudera</id> <url>https://repository.cloudera.com/content/repositories/releases/</url> 
 			</repository> -->
 		<repository>
-			<id>pacakged avro</id>
+			<id>packaged avro</id>
 			<url>http://nicta.github.com/scoobi/releases/</url>
 		</repository>
 	</repositories>
 	<build>
-		<!--<sourceDirectory>src/main/scala</sourceDirectory> -->
-		<testSourceDirectory>tests/src/main/scala</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>net.alchim31.maven</groupId>
@@ -110,8 +108,17 @@
 				<version>3.0.1</version>
 				<executions>
 					<execution>
+						<id>scala-compile-first</id>
+						<phase>process-resources</phase>
 						<goals>
+							<goal>add-source</goal>
 							<goal>compile</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>scala-test-compile</id>
+						<phase>process-test-resources</phase>
+						<goals>
 							<goal>testCompile</goal>
 						</goals>
 					</execution>
@@ -126,6 +133,18 @@
 						<jvmArg>-Xmx4024m</jvmArg>
 					</jvmArgs>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>compile</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
