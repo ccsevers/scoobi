@@ -13,7 +13,7 @@
   * See the License for the specific language governing permissions and
   * limitations under the License.
   */
-package com.nicta.scoobi.examples
+//package com.nicta.scoobi.examples
 
 import com.nicta.scoobi.Scoobi._
 import java.io._
