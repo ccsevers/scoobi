@@ -59,30 +59,7 @@ object AvroInput {
   lazy val logger = LogFactory.getLog("scoobi.AvroInput")
 
    
-  implicit def SpecificRecordFmt[T <: SpecificRecord] = new WireFormat[T] {
-    def toWire(x: T, out: DataOutput) { 
-      val schema : Schema = x.getSchema
-      val byteStream : ByteArrayOutputStream  = new ByteArrayOutputStream
-      val encoder : Encoder = EncoderFactory.get.binaryEncoder(byteStream, null)
-      val datumWriter : SpecificDatumWriter[T] = new SpecificDatumWriter[T](schema)
-      val dataFileWriter : DataFileWriter[T] = new DataFileWriter[T]( datumWriter)
-      dataFileWriter.create(schema, byteStream);
-      byteStream.flush
-      val byteArray = byteStream.toByteArray
-      out.writeInt(byteArray.size)
-      out.write(byteArray) 
-    }
-    def fromWire(in: DataInput): T = {
-      val size = in.readInt()
-      val barr = new Array[Byte](size)
-      in.readFully(barr)
-    	  val byteStream : ByteArrayInputStream = new ByteArrayInputStream(barr)
-      val datumReader : DatumReader[T] = new SpecificDatumReader[T]
-    	  val dataFileReader : DataFileStream[T] = new DataFileStream[T](byteStream, datumReader)
-    	  val record : T = dataFileReader.next()
-    	  record
-    }
-  }
+  
 
 
   /** Create a new DList from the contents of one or more Avro files. The type of the DList must conform to
@@ -182,6 +159,63 @@ object AvroInput {
 	    }
   }
 
+    DList.fromSource(source)
+  }
+ 
+ def fromAvroSpecific[T <:SpecificRecord : Manifest](schema: Schema, paths: String*): DList[T ] = fromAvroSpecific(schema, List(paths: _*))
+  
+  def fromAvroSpecific[T<:SpecificRecord : Manifest](schema : Schema, paths: List[String]): DList[T] = {
+
+	
+    val source = new DataSource[AvroKey[T], NullWritable, T] {
+      private val inputPaths = paths.map(p => new Path(p))
+
+      val inputFormat = classOf[AvroKeyInputFormat[T]]
+
+      def inputCheck() = inputPaths foreach { p =>
+        if (Helper.pathExists(p)) {
+          logger.info("Input path: " + p.toUri.toASCIIString + " (" + Helper.sizeString(Helper.pathSize(p)) + ")")
+          logger.debug("Input schema: " + schema)
+        } else {
+           throw new IOException("Input path " + p + " does not exist.")
+        }
+      }
+
+      def inputConfigure(job: Job) = {
+        inputPaths foreach { p => FileInputFormat.addInputPath(job, p) }
+        job.getConfiguration.set("avro.schema.input.key", schema.toString)
+      }
+
+      def inputSize(): Long = inputPaths.map(p => Helper.pathSize(p)).sum
+
+      val inputConverter = new InputConverter[AvroKey[T], NullWritable, T] {
+        def fromKeyValue(context: InputContext, k: AvroKey[T], v: NullWritable) = k.datum.asInstanceOf[T]
+      }
+    }
+   implicit def SpecificRecordFmt[T <: SpecificRecord] = new WireFormat[T] {
+    def toWire(x: T, out: DataOutput) { 
+      val schema : Schema = x.getSchema
+      val byteStream : ByteArrayOutputStream  = new ByteArrayOutputStream
+      val encoder : Encoder = EncoderFactory.get.binaryEncoder(byteStream, null)
+      val datumWriter : SpecificDatumWriter[T] = new SpecificDatumWriter[T](schema)
+      val dataFileWriter : DataFileWriter[T] = new DataFileWriter[T]( datumWriter)
+      dataFileWriter.create(schema, byteStream);
+      byteStream.flush
+      val byteArray = byteStream.toByteArray
+      out.writeInt(byteArray.size)
+      out.write(byteArray) 
+    }
+    def fromWire(in: DataInput): T = {
+      val size = in.readInt()
+      val barr = new Array[Byte](size)
+      in.readFully(barr)
+    	  val byteStream : ByteArrayInputStream = new ByteArrayInputStream(barr)
+      val datumReader : DatumReader[T] = new SpecificDatumReader[T]
+    	  val dataFileReader : DataFileStream[T] = new DataFileStream[T](byteStream, datumReader)
+    	  val record : T = dataFileReader.next()
+    	  record
+    }
+  }
     DList.fromSource(source)
   }
   
