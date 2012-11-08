@@ -6,7 +6,7 @@ scalaVersion := "2.9.2"
 
 scalacOptions ++= Seq("-Ydependent-method-types", "-deprecation")
 
-libraryDependencies += "com.nicta" %% "scoobi" % "0.6.1-cdh3-SNAPSHOT"
+libraryDependencies += "com.nicta" %% "scoobi" % "0.6.0-cdh3-SNAPSHOT"
 
 
 
